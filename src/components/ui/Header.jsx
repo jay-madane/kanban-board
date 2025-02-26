@@ -7,7 +7,7 @@ const Header = () => {
   
   return (
     <header style={{ marginBottom: '32px' }}>
-      <Text variant="xxLarge" styles={{ root: { color: theme.palette.themePrimary } }}>
+      <Text variant="xxLarge" style={{ marginRight: '10px' }} styles={{ root: { color: theme.palette.themePrimary } }}>
         Kanban Board
       </Text>
       <Text variant="large" styles={{ root: { color: theme.palette.neutralSecondary, marginTop: '8px' } }}>

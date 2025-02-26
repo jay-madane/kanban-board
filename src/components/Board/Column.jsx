@@ -5,28 +5,30 @@ import { useTheme } from '../../context/ThemeContext';
 import { createColumnStyles, createColumnHeaderStyles } from '../../styles/styleUtils';
 import TaskCard from './TaskCard';
 
-const Column = ({ column, tasks, onDeleteTask }) => {  
+const Column = ({ column, tasks, onDeleteTask }) => {
   const { theme } = useTheme();
   const columnStyles = createColumnStyles(theme);
   const headerStyles = createColumnHeaderStyles(theme);
-  
+
   return (
     <div className={columnStyles}>
       <div className={headerStyles}>
         <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
           <Text>{column.icon}</Text>
           <Text variant="mediumPlus">{column.title}</Text>
-          <Text variant="small" styles={{ root: {
-            backgroundColor: theme.palette.neutralQuaternary,
-            borderRadius: '12px',
-            padding: '0px 8px',
-            fontWeight: 600,
-          }}}>
+          <Text variant="small" styles={{
+            root: {
+              backgroundColor: theme.palette.neutralQuaternary,
+              borderRadius: '12px',
+              padding: '0px 8px',
+              fontWeight: 600,
+            }
+          }}>
             {tasks?.length || 0}
           </Text>
         </Stack>
       </div>
-      
+
       <Droppable droppableId={column.id}>
         {(provided, snapshot) => (
           <div
@@ -49,7 +51,7 @@ const Column = ({ column, tasks, onDeleteTask }) => {
                     task={task}
                     provided={provided}
                     snapshot={snapshot}
-                    onDelete={onDeleteTask}  
+                    onDelete={onDeleteTask}
                   />
                 )}
               </Draggable>

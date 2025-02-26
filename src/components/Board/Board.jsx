@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Column from './Column';
 import { columns } from '../../constants/columns';
-import { useKanban } from '../../hooks/useKanban';
 import { Dialog, DialogType, PrimaryButton, useTheme } from '@fluentui/react';
 import TaskForm from '../forms/TaskForm';
 
-const Board = () => {
-  const { tasks, handleDragEnd, handleDeleteTask, addTask } = useKanban();
+const Board = ({
+  tasks,
+  handleDragEnd,
+  handleDeleteTask,
+  addTask,
+}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const theme = useTheme();
 
