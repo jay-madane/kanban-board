@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { initialTasks } from '../data/initialTasks';
+import { animate } from 'framer-motion';
 
 export const useKanban = () => {
   const [tasks, setTasks] = useState(initialTasks);
@@ -29,7 +30,7 @@ export const useKanban = () => {
     const newSourceColumn = [...sourceColumn];
     newSourceColumn.splice(source.index, 1);
     
-    // If moving to same column
+    // If moving to the same column
     if (source.droppableId === destination.droppableId) {
       newSourceColumn.splice(destination.index, 0, draggedTask);
       const newTasks = {
@@ -47,6 +48,11 @@ export const useKanban = () => {
         [destination.droppableId]: newDestinationColumn,
       };
       setTasks(newTasks);
+
+      // Trigger animation when moving to "Completed" column
+      if (destination.droppableId === 'completed') {
+        animate("body", { scale: [1, 1.02, 1] }, { duration: 0.3 });
+      }
     }
   };
   

@@ -4,6 +4,7 @@ import { Stack, Text } from '@fluentui/react';
 import { useTheme } from '../../context/ThemeContext';
 import { createColumnStyles, createColumnHeaderStyles } from '../../styles/styleUtils';
 import TaskCard from './TaskCard';
+import { motion } from 'framer-motion';
 
 const Column = ({ column, tasks, onDeleteTask }) => {  
   const { theme } = useTheme();
@@ -11,7 +12,13 @@ const Column = ({ column, tasks, onDeleteTask }) => {
   const headerStyles = createColumnHeaderStyles(theme);
   
   return (
-    <div className={columnStyles}>
+    <motion.div 
+      className={columnStyles}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className={headerStyles}>
         <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
           <Text>{column.icon}</Text>
@@ -29,7 +36,7 @@ const Column = ({ column, tasks, onDeleteTask }) => {
       
       <Droppable droppableId={column.id}>
         {(provided, snapshot) => (
-          <div
+          <motion.div
             ref={provided.innerRef}
             {...provided.droppableProps}
             style={{
@@ -40,7 +47,11 @@ const Column = ({ column, tasks, onDeleteTask }) => {
               transition: 'background-color 0.2s ease',
               borderRadius: '4px',
               padding: '4px',
+              boxShadow: snapshot.isDraggingOver ? '0px 6px 14px rgba(0,0,0,0.15)' : 'none',
             }}
+            initial={{ scale: 0.98 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           >
             {tasks?.map((task, index) => (
               <Draggable key={task.id} draggableId={task.id} index={index}>
@@ -55,10 +66,10 @@ const Column = ({ column, tasks, onDeleteTask }) => {
               </Draggable>
             ))}
             {provided.placeholder}
-          </div>
+          </motion.div>
         )}
       </Droppable>
-    </div>
+    </motion.div>
   );
 };
 

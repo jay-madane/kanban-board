@@ -1,6 +1,7 @@
-
 import React, { useState } from 'react';
 import { PrimaryButton } from '@fluentui/react';
+import { motion } from 'framer-motion';
+import { Parallax } from 'react-scroll-parallax';
 
 // Context & Hooks
 import { useTheme } from './context/ThemeContext';
@@ -34,13 +35,22 @@ const App = () => {
   };
 
   return (
-    <div style={{ 
-      padding: '24px', 
-      background: theme.palette.white, 
-      minHeight: '100vh',
-      transition: 'all 0.2s ease-in-out'
-    }}>
-      <Header />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      style={{ 
+        padding: '24px', 
+        background: theme.palette.white, 
+        minHeight: '100vh',
+        transition: 'all 0.3s ease-in-out'
+      }}
+    >
+      <Parallax speed={-10}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '32px' }}>
+          <Header />
+        </div>
+      </Parallax>
       
       <div style={{ 
         position: 'relative', 
@@ -54,25 +64,34 @@ const App = () => {
             onClick={() => setIsThemeSelectorOpen(!isThemeSelectorOpen)}
             styles={{
               root: {
-                borderRadius: '3px',
-                padding: '0 16px'
-              }
+                borderRadius: '6px',
+                padding: '0 16px',
+                transition: 'all 0.2s ease-in-out',
+                ':hover': {
+                  transform: 'scale(1.05)',
+                },
+              },
             }}
           />
           
           {isThemeSelectorOpen && (
-            <div style={{ 
-              position: 'absolute', 
-              top: '36px', 
-              right: '0', 
-              width: '250px',
-              background: theme.palette.white, 
-              boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)', 
-              borderRadius: '4px', 
-              border: `1px solid ${theme.palette.neutralLight}`,
-              padding: '12px', 
-              zIndex: 10
-            }}>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{ 
+                position: 'absolute', 
+                top: '36px', 
+                right: '0', 
+                width: '250px',
+                background: theme.palette.white, 
+                boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)', 
+                borderRadius: '8px', 
+                border: `1px solid ${theme.palette.neutralLight}`,
+                padding: '12px', 
+                zIndex: 10,
+              }}
+            >
               <div style={{ marginBottom: '8px' }}>
                 <h3 style={{ 
                   margin: '0 0 12px 0', 
@@ -86,7 +105,7 @@ const App = () => {
                 </h3>
                 <ThemeSelector />
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
@@ -98,7 +117,7 @@ const App = () => {
         onDismiss={() => setIsDialogOpen(false)}
         onSubmit={handleAddTask}
       />
-    </div>
+    </motion.div>
   );
 };
 

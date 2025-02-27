@@ -4,6 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { createCardStyles, createTaskDescriptionStyles } from '../../styles/styleUtils';
 import { priorityColors } from '../../constants/priorities';
 import AssigneeDisplay from '../ui/AssigneeDisplay';
+import { motion } from 'framer-motion';
 
 const TaskCard = ({ task, provided, snapshot, onDelete }) => {
   const { theme } = useTheme();
@@ -11,7 +12,7 @@ const TaskCard = ({ task, provided, snapshot, onDelete }) => {
   const descriptionStyles = createTaskDescriptionStyles(theme);
 
   return (
-    <div
+    <motion.div
       ref={provided.innerRef}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
@@ -19,6 +20,11 @@ const TaskCard = ({ task, provided, snapshot, onDelete }) => {
       style={{
         ...provided.draggableProps.style,
       }}
+      initial={{ scale: 0.95, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      whileHover={{ scale: 1.02, boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)' }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
       <Stack>
         <Stack horizontal horizontalAlign="space-between" verticalAlign="center">
@@ -56,7 +62,7 @@ const TaskCard = ({ task, provided, snapshot, onDelete }) => {
           </Text>
         </Stack>
       </Stack>
-    </div>
+    </motion.div>
   );
 };
 
