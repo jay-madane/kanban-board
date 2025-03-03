@@ -1,4 +1,3 @@
-
 body {
   background-color: var(--background-color);
   color: var(--text-color);
@@ -34,6 +33,28 @@ button {
   background: var(--card-bg);
   padding: 20px;
   border-radius: var(--border-radius);
-  width: 200px;
+  width: 250px; /* Increased width for better readability */
   text-align: center;
+  
+  /** Enable scrolling when tasks overflow **/
+  max-height: 400px;  
+  overflow-y: auto;   
+}
+
+/* Custom Scrollbar */
+.column::-webkit-scrollbar {
+  width: 6px;
+}
+
+.column::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.column::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.column::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
 }
