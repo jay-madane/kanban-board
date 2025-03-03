@@ -16,6 +16,7 @@ const Header = () => {
       <Text 
         variant="xxLarge" 
         styles={{ root: { color: theme.palette.themePrimary, fontWeight: 700, letterSpacing: '1px' } }}
+        style={{ marginRight: '10px' }}
       >
         Kanban Board
       </Text>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { PrimaryButton } from '@fluentui/react';
+import React, { useState, useEffect } from 'react';
+import { PrimaryButton, Stack, TextField } from '@fluentui/react';
 import { motion } from 'framer-motion';
 import { Parallax } from 'react-scroll-parallax';
 
@@ -20,11 +20,37 @@ const App = () => {
   // State management
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
-  
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Get the base tasks from useKanban
+  const { tasks: originalTasks, addTask, handleDragEnd, handleDeleteTask } = useKanban();
+
+  // Apply filter manually in the component
+  const [filteredTasks, setFilteredTasks] = useState(originalTasks);
+
+  // Filter tasks whenever searchQuery or originalTasks change
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredTasks(originalTasks);
+      return;
+    }
+
+    console.log('App filtering with query:', searchQuery);
+
+    const newFilteredTasks = {};
+    Object.keys(originalTasks).forEach(columnId => {
+      newFilteredTasks[columnId] = originalTasks[columnId].filter(task =>
+        task.assignee && task.assignee.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+
+    console.log('App filtered results:', newFilteredTasks);
+    setFilteredTasks(newFilteredTasks);
+  }, [searchQuery, originalTasks]);
+
   // Hooks
-  const { addTask } = useKanban();
   const { theme } = useTheme();
-  
+
   // Generate styles based on current theme
   const themeContainerStyles = createThemeContainerStyles(theme);
 
@@ -51,16 +77,33 @@ const App = () => {
           <Header />
         </div>
       </Parallax>
-      
-      <div style={{ 
-        position: 'relative', 
-        display: 'flex', 
-        justifyContent: 'flex-end',
-        marginBottom: '20px' 
+
+      <Header />
+
+      <div style={{
+        position: 'relative',
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '20px',
+        marginRight: '15px',
+        alignItems: 'center'
       }}>
+        <div>
+          <Stack horizontal tokens={{ childrenGap: 10 }}>
+            <TextField
+              placeholder="Search by assigned user..."
+              value={searchQuery}
+              onChange={(e) => {
+                console.log("Setting search query to:", e.target.value);
+                setSearchQuery(e.target.value);
+              }}
+            />
+          </Stack>
+        </div>
+
         <div style={{ position: 'relative' }}>
-          <PrimaryButton 
-            text="Toggle Theme" 
+          <PrimaryButton
+            text="Toggle Theme"
             onClick={() => setIsThemeSelectorOpen(!isThemeSelectorOpen)}
             styles={{
               root: {
@@ -73,7 +116,7 @@ const App = () => {
               },
             }}
           />
-          
+
           {isThemeSelectorOpen && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -93,9 +136,9 @@ const App = () => {
               }}
             >
               <div style={{ marginBottom: '8px' }}>
-                <h3 style={{ 
-                  margin: '0 0 12px 0', 
-                  fontSize: '14px', 
+                <h3 style={{
+                  margin: '0 0 12px 0',
+                  fontSize: '14px',
                   fontWeight: 600,
                   color: theme.palette.neutralPrimary,
                   borderBottom: `1px solid ${theme.palette.neutralLight}`,
@@ -109,9 +152,14 @@ const App = () => {
           )}
         </div>
       </div>
-      
-      <Board />
-      
+
+      <Board
+        tasks={filteredTasks}
+        handleDragEnd={handleDragEnd}
+        handleDeleteTask={handleDeleteTask}
+        addTask={handleAddTask}
+      />
+
       <TaskDialog
         isOpen={isDialogOpen}
         onDismiss={() => setIsDialogOpen(false)}

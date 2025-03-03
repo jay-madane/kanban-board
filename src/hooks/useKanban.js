@@ -1,18 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { initialTasks } from '../data/initialTasks';
 import { animate } from 'framer-motion';
 
 export const useKanban = () => {
-  const [tasks, setTasks] = useState(initialTasks);
-  
-  const handleDragEnd = (result) => {
+  // the original tasks unchanged
+  const [originalTasks, setOriginalTasks] = useState(initialTasks);
+  // the filtered tasks separately
+  const [filteredTasks, setFilteredTasks] = useState(initialTasks);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // filtering whenever searchQuery or originalTasks change
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredTasks(originalTasks);
+      return;
+    }
+    const newFilteredTasks = {};
+    Object.keys(originalTasks).forEach(columnId => {
+      newFilteredTasks[columnId] = originalTasks[columnId].filter(task =>
+        task.assignee && task.assignee.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+    setFilteredTasks(newFilteredTasks);
+  }, [searchQuery, originalTasks]);
+
+  const handleDragEnd = useCallback((result) => {
     const { destination, source, draggableId } = result;
-    
+
     // If dropped outside a droppable area
     if (!destination) {
       return;
     }
-    
+
     // If dropped in the same position
     if (
       destination.droppableId === source.droppableId &&
@@ -20,91 +39,87 @@ export const useKanban = () => {
     ) {
       return;
     }
-    
+
     // Find the task and move it
-    const sourceColumn = tasks[source.droppableId];
-    const destinationColumn = tasks[destination.droppableId];
+    const sourceColumn = originalTasks[source.droppableId];
+    const destinationColumn = originalTasks[destination.droppableId];
     const draggedTask = sourceColumn.find(task => task.id === draggableId);
-    
+
     // Create new arrays without mutating the originals
     const newSourceColumn = [...sourceColumn];
     newSourceColumn.splice(source.index, 1);
     
-    // If moving to the same column
+    // If moving to same column
     if (source.droppableId === destination.droppableId) {
       newSourceColumn.splice(destination.index, 0, draggedTask);
       const newTasks = {
-        ...tasks,
+        ...originalTasks,
         [source.droppableId]: newSourceColumn,
       };
-      setTasks(newTasks);
+      setOriginalTasks(newTasks);
     } else {
       // Moving to different column
       const newDestinationColumn = [...destinationColumn];
       newDestinationColumn.splice(destination.index, 0, draggedTask);
       const newTasks = {
-        ...tasks,
+        ...originalTasks,
         [source.droppableId]: newSourceColumn,
         [destination.droppableId]: newDestinationColumn,
       };
-      setTasks(newTasks);
-
       // Trigger animation when moving to "Completed" column
       if (destination.droppableId === 'completed') {
         animate("body", { scale: [1, 1.02, 1] }, { duration: 0.3 });
       }
+      setOriginalTasks(newTasks);
     }
-  };
-  
-  const addTask = (newTask) => {
-    console.log('Adding new task:', newTask);
-    
+  }, [originalTasks]);
+
+  const addTask = useCallback((newTask) => {
+
     const taskId = `task-${Date.now()}`;
     const taskToAdd = {
       id: taskId,
       ...newTask,
       created: new Date().toISOString(),
     };
-    
+
     // If the task has a columnId property, use that
     // Otherwise use the first column from your columns constant
-    const targetColumnId = newTask.columnId || Object.keys(tasks)[0];
-    
-    console.log(`Target column ID: ${targetColumnId}`);
-    console.log('Current tasks state:', tasks);
-    
+    const targetColumnId = newTask.columnId || Object.keys(originalTasks)[0];
+
     // Make sure the column exists
-    if (!tasks[targetColumnId]) {
-      console.error(`Column ${targetColumnId} doesn't exist in tasks:`, Object.keys(tasks));
+    if (!originalTasks[targetColumnId]) {
+      console.error(`Column ${targetColumnId} doesn't exist in tasks:`, Object.keys(originalTasks));
       return;
     }
-    
+
     const updatedTasks = {
-      ...tasks,
-      [targetColumnId]: [taskToAdd, ...tasks[targetColumnId]],
+      ...originalTasks,
+      [targetColumnId]: [taskToAdd, ...originalTasks[targetColumnId]],
     };
-    
-    console.log('Updated tasks state:', updatedTasks);
-    setTasks(updatedTasks);
-  };
-  
-  // Add this new function to delete tasks
-  const handleDeleteTask = (taskId) => {
+
+    setOriginalTasks(updatedTasks);
+  }, [originalTasks]);
+
+  const handleDeleteTask = useCallback((taskId) => {
     // Create a new tasks object
     const newTasks = {};
-    
+
     // For each column, filter out the task with the given ID
-    Object.keys(tasks).forEach(columnId => {
-      newTasks[columnId] = tasks[columnId].filter(task => task.id !== taskId);
+    Object.keys(originalTasks).forEach(columnId => {
+      newTasks[columnId] = originalTasks[columnId].filter(task => task.id !== taskId);
     });
-    
-    setTasks(newTasks);
-  };
-  
+
+    setOriginalTasks(newTasks);
+  }, [originalTasks]);
+
   return {
-    tasks,
+    tasks: filteredTasks,
+    originalTasks,
+    searchQuery,
+    setSearchQuery,
     handleDragEnd,
     addTask,
-    handleDeleteTask  // Export the new function
+    handleDeleteTask
   };
 };

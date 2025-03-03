@@ -11,7 +11,6 @@ const Column = ({ column, tasks, onDeleteTask }) => {
   const { theme } = useTheme();
   const columnStyles = createColumnStyles(theme);
   const headerStyles = createColumnHeaderStyles(theme);
-
  
   const [visibleCount, setVisibleCount] = useState(3); 
   const [expanded, setExpanded] = useState(false); 
@@ -38,18 +37,20 @@ const Column = ({ column, tasks, onDeleteTask }) => {
         <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
           <Text>{column.icon}</Text>
           <Text variant="mediumPlus">{column.title}</Text>
-          <Text variant="small" styles={{ root: {
-            backgroundColor: theme.palette.neutralQuaternary,
-            borderRadius: "12px",
-            padding: "0px 8px",
-            fontWeight: 600,
-          }}}>
+          <Text variant="small" styles={{
+            root: {
+              backgroundColor: theme.palette.neutralQuaternary,
+              borderRadius: '12px',
+              padding: '0px 8px',
+              fontWeight: 600,
+            }
+          }}>
+
             {tasks?.length || 0}
           </Text>
         </Stack>
       </div>
-      
-      
+
       <Droppable droppableId={column.id}>
         {(provided, snapshot) => (
           <motion.div
@@ -72,7 +73,7 @@ const Column = ({ column, tasks, onDeleteTask }) => {
                     task={task}
                     provided={provided}
                     snapshot={snapshot}
-                    onDelete={onDeleteTask}  
+                    onDelete={onDeleteTask}
                   />
                 )}
               </Draggable>

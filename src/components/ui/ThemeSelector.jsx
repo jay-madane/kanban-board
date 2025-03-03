@@ -19,9 +19,6 @@ const ThemeSelector = () => {
       transition={{ duration: 0.3 }}
     >
       <Stack horizontal tokens={{ childrenGap: 16 }} verticalAlign="center">
-        <Text variant="medium" styles={{ root: { fontWeight: 600 } }}>
-          Theme:
-        </Text>
         <ChoiceGroup
           defaultSelectedKey={currentTheme}
           options={[
@@ -33,7 +30,7 @@ const ThemeSelector = () => {
           onChange={handleThemeChange}
           styles={{
             root: { display: 'flex' },
-            flexContainer: { display: 'flex' },
+            flexContainer: { display: 'flex', flexDirection: 'column' },
             labelWrapper: { marginLeft: 4, marginRight: 12 },
           }}
         />
